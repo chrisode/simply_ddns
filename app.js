@@ -1,9 +1,10 @@
 import { readFile } from "fs/promises";
 import axios from "axios";
+import checkIP from "./lib/checkIP.js";
 
 let _config, _instance;
 
-async function getInstance() {
+async function getAxiosInstance() {
 
   if (_instance) {
     return _instance;
@@ -51,7 +52,7 @@ async function updateAlHostnames() {
 
 async function updateHostname(domain, hostname) {
   try {
-    const instance = await getInstance();
+    const instance = await getAxiosInstance();
     const response = await instance.post(`/2/ddns/?domain=${domain}&hostname=${hostname}`);
     console.log(`Succesfully updated hostname ${hostname}`);
   } catch (error) {
@@ -61,6 +62,11 @@ async function updateHostname(domain, hostname) {
 }
 
 async function app() {
+  const isNewIP = await checkIP();
+  if (!isNewIP) {
+      console.log("IP has not changed, aborting...");
+      return;
+  }
   await updateAlHostnames();
 }
 
