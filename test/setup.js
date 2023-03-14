@@ -2,10 +2,10 @@
 import "mocha-cakes-2";
 
 import chai from "chai";
-global.expect = chai.expect;
-
 import nock from "nock";
+
+global.expect = chai.expect;
 nock.disableNetConnect();
 nock.enableNetConnect(
-  host => host.includes("simply.com")
-)
+  (host) => host.includes("simply.com")
+);

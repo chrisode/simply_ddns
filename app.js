@@ -1,6 +1,7 @@
 import { readFile } from "fs/promises";
 import { fileURLToPath } from "url";
 import axios from "axios";
+
 import checkIP from "./lib/checkIP.js";
 import Logger from "./lib/logger.js";
 
@@ -23,8 +24,8 @@ async function getAxiosInstance() {
     responseType: "text",
     auth: {
       username: config.account,
-      password: config.apikey
-    }
+      password: config.apikey,
+    },
   });
 
   return _instance;
@@ -34,7 +35,7 @@ async function getConfig() {
   if (_config) {
     return _config;
   }
-  const configFile = await readFile("./config.json")
+  const configFile = await readFile("./config.json");
   _config = JSON.parse(configFile);
   return _config;
 }
@@ -48,7 +49,7 @@ async function updateAlHostnames() {
 
   const domains = await getDomains();
 
-  for (const [domain, hostnames] of Object.entries(domains)) {
+  for (const [ domain, hostnames ] of Object.entries(domains)) {
     hostnames.forEach((hostname) => {
       updateHostname(domain, hostname);
     });
@@ -77,7 +78,7 @@ async function app() {
 
 // Only run if called from terminal, not if included
 if (isNotImported) {
-  await app()
+  await app();
 }
 
 export default app;

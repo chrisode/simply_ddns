@@ -12,7 +12,7 @@ Feature("Update simply dns records", () => {
     try {
       orgConfigFile = await readFile(configFilePath);
       orgIPFile = await readFile(ipFilePath);
-    } catch { }
+    } catch { } // eslint-disable-line
   });
 
   afterEachScenario(async () => {
@@ -30,9 +30,9 @@ Feature("Update simply dns records", () => {
 
   async function fakeConfig() {
     const config = {
-      "account": "kaka",
-      "apikey": "kaka",
-      "domains": { "example.com": ["kaka.example.com"] }
+      account: "kaka",
+      apikey: "kaka",
+      domains: { "example.com": [ "kaka.example.com" ] },
     };
     await writeFile(configFilePath, JSON.stringify(config));
   }
@@ -46,7 +46,7 @@ Feature("Update simply dns records", () => {
     And("ip file with previos IP doesnt exists", async () => {
       try {
         await unlink(ipFilePath);
-      } catch { }
+      } catch { } // eslint-disable-line
     });
 
     And("Simply api is available", async () => {
@@ -54,7 +54,7 @@ Feature("Update simply dns records", () => {
 
       await fakeSimplyAPI.post("/2/ddns/").query(true).reply(201, function (path) {
         calledPath = path;
-        headers = this.req.headers
+        headers = this.req.headers;
 
         return "OK";
       });
@@ -66,7 +66,7 @@ Feature("Update simply dns records", () => {
     });
 
     Then("it should run", async () => {
-      await app()
+      await app();
     });
 
     And("IP should have been fetched from the API", () => {
@@ -82,14 +82,14 @@ Feature("Update simply dns records", () => {
     });
 
     And("It should have provided basic auth headers", () => {
-      expect(headers).to.have.property("authorization").and.equal("Basic a2FrYTprYWth")
+      expect(headers).to.have.property("authorization").and.equal("Basic a2FrYTprYWth");
     });
 
     And("It should have created a hidden file, .ip, containing the last fetched IP", async () => {
       let ipFileContent;
       try {
         ipFileContent = await readFile(ipFilePath, "utf-8");
-      } catch { }
+      } catch { } // eslint-disable-line
       expect(ipFileContent).to.equal("96.69.96.69");
     });
 
@@ -103,7 +103,7 @@ Feature("Update simply dns records", () => {
     And("ip file with previos IP does exist", async () => {
       try {
         await writeFile(ipFilePath, "96.69.96.69");
-      } catch { }
+      } catch { } // eslint-disable-line
     });
 
     And("Simply api is available", async () => {
@@ -117,7 +117,7 @@ Feature("Update simply dns records", () => {
     });
 
     Then("it should run", async () => {
-      await app()
+      await app();
     });
 
     And("IP should have been fetched from the API", () => {
@@ -132,7 +132,7 @@ Feature("Update simply dns records", () => {
       let ipFileContent;
       try {
         ipFileContent = await readFile(ipFilePath, "utf-8");
-      } catch { }
+      } catch { } // eslint-disable-line
       expect(ipFileContent).to.equal("92.69.96.69");
     });
 
@@ -146,7 +146,7 @@ Feature("Update simply dns records", () => {
     And("ip file with previos IP does exist", async () => {
       try {
         await writeFile(ipFilePath, "96.69.96.69");
-      } catch { }
+      } catch { } // eslint-disable-line
     });
 
     And("Simply api is available", async () => {
@@ -160,7 +160,7 @@ Feature("Update simply dns records", () => {
     });
 
     Then("it should run", async () => {
-      await app()
+      await app();
     });
 
     And("IP should have been fetched from the API", () => {
@@ -172,4 +172,3 @@ Feature("Update simply dns records", () => {
     });
   });
 });
-
