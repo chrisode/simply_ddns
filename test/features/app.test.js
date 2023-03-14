@@ -3,51 +3,55 @@ import { readFile, writeFile, unlink } from "fs/promises";
 
 import app from "../../app.js";
 
-
 Feature("Update simply dns records", () => {
+  const configFilePath = "./config.json";
+  const ipFilePath = "./.ip";
+  let orgConfigFile, orgIPFile;
+
+  beforeEachScenario(async () => {
+    try {
+      orgConfigFile = await readFile(configFilePath);
+      orgIPFile = await readFile(ipFilePath);
+    } catch { }
+  });
+
+  afterEachScenario(async () => {
+    if (orgConfigFile) {
+      await writeFile(configFilePath, orgConfigFile);
+    } else {
+      unlink(configFilePath);
+    }
+    if (orgIPFile) {
+      await writeFile(ipFilePath, orgIPFile);
+    } else {
+      unlink(ipFilePath);
+    }
+  });
+
+  async function fakeConfig() {
+    const config = {
+      "account": "kaka",
+      "apikey": "kaka",
+      "domains": { "example.com": ["kaka.example.com"] }
+    };
+    await writeFile(configFilePath, JSON.stringify(config));
+  }
 
   Scenario("First time update of all dns records for specified domains", () => {
-    const configFilePath = "./config.json";
-    const ipFilePath = "./.ip";
-    let orgConfigFile, orgIPFile, fakeIPApi, fakeSimplyAPI;
+    let fakeIPApi, fakeSimplyAPI;
     let calledPath = "", headers = {};
 
-    before(async () => {
-      try {
-        orgConfigFile = await readFile(configFilePath);
-        orgIPFile = await readFile(ipFilePath);
-      } catch {
-        orgConfigFile = "{}"
-      }     
-    });
-
-    after(async () => {
-      await writeFile(configFilePath, orgConfigFile);
-      if (orgIPFile) {
-        await writeFile(ipFilePath, orgIPFile);
-      } else {
-        unlink(ipFilePath);
-      }
-    });
-
-    When("Configfile exists", async () => {
-      const config = {
-        "account": "kaka",
-        "apikey": "kaka",
-        "domains": {"example.com": ["kaka.example.com"]}
-      };
-      await writeFile(configFilePath, JSON.stringify(config));
-    });
+    When("Configfile exists", fakeConfig);
 
     And("ip file with previos IP doesnt exists", async () => {
       try {
         await unlink(ipFilePath);
-      } catch {}
+      } catch { }
     });
 
     And("Simply api is available", async () => {
       fakeSimplyAPI = nock("https://api.simply.com");
-      
+
       await fakeSimplyAPI.post("/2/ddns/").query(true).reply(201, function (path) {
         calledPath = path;
         headers = this.req.headers
@@ -58,7 +62,7 @@ Feature("Update simply dns records", () => {
 
     And("IP API is available", async () => {
       fakeIPApi = nock("https://api.ipify.org");
-      await fakeIPApi.get("/").query({format: "json"}).reply(200, {ip: "96.69.96.69"});
+      await fakeIPApi.get("/").query({ format: "json" }).reply(200, { ip: "96.69.96.69" });
     });
 
     Then("it should run", async () => {
@@ -85,48 +89,21 @@ Feature("Update simply dns records", () => {
       let ipFileContent;
       try {
         ipFileContent = await readFile(ipFilePath, "utf-8");
-      } catch {}
+      } catch { }
       expect(ipFileContent).to.equal("96.69.96.69");
     });
 
   });
 
   Scenario("Update domains when IP has changed", () => {
-    const configFilePath = "./config.json";
-    const ipFilePath = "./.ip";
-    let orgConfigFile, orgIPFile, fakeIPApi, fakeSimplyAPI;
+    let fakeIPApi, fakeSimplyAPI;
 
-    before(async () => {
-      try {
-        orgConfigFile = await readFile(configFilePath);
-        orgIPFile = await readFile(ipFilePath);
-      } catch {
-        orgConfigFile = "{}"
-      }     
-    });
-
-    after(async () => {
-      await writeFile(configFilePath, orgConfigFile);
-      if (orgIPFile) {
-        await writeFile(ipFilePath, orgIPFile);
-      } else {
-        unlink(ipFilePath);
-      }
-    });
-
-    When("Configfile exists", async () => {
-      const config = {
-        "account": "kaka",
-        "apikey": "kaka",
-        "domains": {"example.com": ["kaka.example.com"]}
-      };
-      await writeFile(configFilePath, JSON.stringify(config));
-    });
+    When("Configfile exists", fakeConfig);
 
     And("ip file with previos IP does exist", async () => {
       try {
         await writeFile(ipFilePath, "96.69.96.69");
-      } catch {}
+      } catch { }
     });
 
     And("Simply api is available", async () => {
@@ -136,7 +113,7 @@ Feature("Update simply dns records", () => {
 
     And("IP API is available", async () => {
       fakeIPApi = nock("https://api.ipify.org");
-      await fakeIPApi.get("/").query({format: "json"}).reply(200, {ip: "92.69.96.69"});
+      await fakeIPApi.get("/").query({ format: "json" }).reply(200, { ip: "92.69.96.69" });
     });
 
     Then("it should run", async () => {
@@ -155,48 +132,21 @@ Feature("Update simply dns records", () => {
       let ipFileContent;
       try {
         ipFileContent = await readFile(ipFilePath, "utf-8");
-      } catch {}
+      } catch { }
       expect(ipFileContent).to.equal("92.69.96.69");
     });
 
   });
 
   Scenario("Domains should not be updated if ip hasnt changed", () => {
-    const configFilePath = "./config.json";
-    const ipFilePath = "./.ip";
-    let orgConfigFile, orgIPFile, fakeIPApi, fakeSimplyAPI;
+    let fakeIPApi, fakeSimplyAPI;
 
-    before(async () => {
-      try {
-        orgConfigFile = await readFile(configFilePath);
-        orgIPFile = await readFile(ipFilePath);
-      } catch {
-        orgConfigFile = "{}"
-      }     
-    });
-
-    after(async () => {
-      await writeFile(configFilePath, orgConfigFile);
-      if (orgIPFile) {
-        await writeFile(ipFilePath, orgIPFile);
-      } else {
-        unlink(ipFilePath);
-      }
-    });
-
-    When("Configfile exists", async () => {
-      const config = {
-        "account": "kaka",
-        "apikey": "kaka",
-        "domains": {"example.com": ["kaka.example.com"]}
-      };
-      await writeFile(configFilePath, JSON.stringify(config));
-    });
+    When("Configfile exists", fakeConfig);
 
     And("ip file with previos IP does exist", async () => {
       try {
         await writeFile(ipFilePath, "96.69.96.69");
-      } catch {}
+      } catch { }
     });
 
     And("Simply api is available", async () => {
@@ -206,7 +156,7 @@ Feature("Update simply dns records", () => {
 
     And("IP API is available", async () => {
       fakeIPApi = nock("https://api.ipify.org");
-      await fakeIPApi.get("/").query({format: "json"}).reply(200, {ip: "96.69.96.69"});
+      await fakeIPApi.get("/").query({ format: "json" }).reply(200, { ip: "96.69.96.69" });
     });
 
     Then("it should run", async () => {

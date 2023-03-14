@@ -1,4 +1,5 @@
 import { readFile } from "fs/promises";
+import { fileURLToPath } from "url";
 import axios from "axios";
 import checkIP from "./lib/checkIP.js";
 
@@ -68,6 +69,11 @@ async function app() {
       return;
   }
   await updateAlHostnames();
+}
+
+// Only run if called from terminal, not if included
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  app()
 }
 
 export default app;

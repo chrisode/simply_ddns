@@ -1,0 +1,9 @@
+{   
+    "domains": {
+        "example.com": [
+            "foo.example.com"
+        ]
+    },
+    "account": "account_id",
+    "apikey": "apikey"
+}
