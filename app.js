@@ -65,8 +65,8 @@ async function updateHostname(domain, hostname) {
 async function app() {
   const isNewIP = await checkIP();
   if (!isNewIP) {
-      console.log("IP has not changed, aborting...");
-      return;
+    console.log("IP has not changed, aborting...");
+    return;
   }
   await updateAlHostnames();
 }
