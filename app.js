@@ -2,8 +2,12 @@ import { readFile } from "fs/promises";
 import { fileURLToPath } from "url";
 import axios from "axios";
 import checkIP from "./lib/checkIP.js";
+import Logger from "./lib/logger.js";
 
 let _config, _instance;
+
+const isNotImported = process.argv[1] === fileURLToPath(import.meta.url);
+const logger = new Logger(isNotImported);
 
 async function getAxiosInstance() {
 
@@ -54,26 +58,26 @@ async function updateAlHostnames() {
 async function updateHostname(domain, hostname) {
   try {
     const instance = await getAxiosInstance();
-    const response = await instance.post(`/2/ddns/?domain=${domain}&hostname=${hostname}`);
-    console.log(`Succesfully updated hostname ${hostname}`);
+    await instance.post(`/2/ddns/?domain=${domain}&hostname=${hostname}`);
+    logger.log(`Succesfully updated hostname ${hostname}`);
   } catch (error) {
-    console.log(`Failed to update hostname ${hostname}`);
-    console.error(error);
+    logger.log(`Failed to update hostname ${hostname}`);
+    logger.error(error);
   }
 }
 
 async function app() {
   const isNewIP = await checkIP();
   if (!isNewIP) {
-    console.log("IP has not changed, aborting...");
+    logger.log("IP has not changed, aborting...");
     return;
   }
   await updateAlHostnames();
 }
 
 // Only run if called from terminal, not if included
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  app()
+if (isNotImported) {
+  await app()
 }
 
 export default app;
