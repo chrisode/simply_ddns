@@ -3,6 +3,5 @@ services:
   app:
     build: .
     volumes:
-      - "./config.json:/app/config.json" 
-    
-    
+      - "./config:/app/config"
+

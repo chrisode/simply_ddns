@@ -4,8 +4,8 @@ import { readFile, writeFile, unlink } from "fs/promises";
 import app from "../../app.js";
 
 Feature("Update simply dns records", () => {
-  const configFilePath = "./config.json";
-  const ipFilePath = "./.ip";
+  const configFilePath = "./config/config.json";
+  const ipFilePath = "./config/.ip";
   let orgConfigFile, orgIPFile;
 
   beforeEachScenario(async () => {

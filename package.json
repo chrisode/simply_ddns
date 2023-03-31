@@ -5,6 +5,7 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
+    "app": "node app.js",
     "test": "mocha test && eslint ."
   },
   "keywords": [
