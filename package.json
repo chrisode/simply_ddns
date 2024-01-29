@@ -15,7 +15,7 @@
   "author": "Christoffer Söderberg <christoffer@delitech.se>",
   "license": "BSD-2-Clause",
   "devDependencies": {
-    "chai": "^4.3.7",
+    "chai": "^5.0.3",
     "eslint": "^8.43.0",
     "eslint-config-exp": "^0.6.2",
     "mocha": "^10.2.0",
